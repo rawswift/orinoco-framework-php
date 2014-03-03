@@ -49,7 +49,7 @@ class Constructor
         }
         if (class_exists($controller)) {
 
-            // check if __construct method needs dependencies
+            // load reflection of controller/class
             $this->registry->reflectionLoad($controller);
 
             // check if "__construct" method exists
