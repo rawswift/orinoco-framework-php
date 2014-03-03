@@ -51,7 +51,13 @@ class Constructor
 
             // check if __construct method needs dependencies
             $this->registry->reflectionLoad($controller);
-            $dependencies = $this->registry->reflectionGetMethodDependencies('__construct');
+
+            // check if "__construct" method exists
+            // if Yes, then get dependencies/parameters info
+            $dependencies = array();
+            if (method_exists($controller, '__construct')) {
+                $dependencies = $this->registry->reflectionGetMethodDependencies('__construct');
+            }
 
             // instantiate the user's controller using reflector
             $obj = $this->registry->reflectionCreateInstance($dependencies);
