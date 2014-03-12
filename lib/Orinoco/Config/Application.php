@@ -6,16 +6,20 @@
  * Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
  */
 
-// use trailing slash on URI
-// this has no use as of this time
-define('USE_TRAILING_SLASH', false);
-
 // default PHP extension
-define('PHP_FILE_EXTENSION', '.php');
+if (!defined('PHP_FILE_EXTENSION')) {
+	define('PHP_FILE_EXTENSION', '.php');
+}
 
-// controllers and actions stuff
-define('SELF_CONTROLLER', 'SELF');
-define('SELF_ACTION', 'SELF');
+// controllers
+if (!defined('SELF_CONTROLLER')) {
+	define('SELF_CONTROLLER', 'SELF');
+}
+
+// actions
+if (!defined('SELF_ACTION')) {
+	define('SELF_ACTION', 'SELF');
+}
 
 // define default controller, if it's not yet defined
 if (!defined('DEFAULT_CONTROLLER')) {
@@ -38,4 +42,6 @@ if (!defined('PAGE_CACHE_EXPIRES')) {
 }
 
 // presentation layer stuff
-define('DEFAULT_LAYOUT', 'default');
+if (!defined('DEFAULT_LAYOUT')) {
+	define('DEFAULT_LAYOUT', 'default');
+}
