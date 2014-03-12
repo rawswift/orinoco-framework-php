@@ -12,11 +12,21 @@ class Application
 {
     public $Request;
     public $Response;
-
-    public function __construct(Request $request, Response $response)
+    public $Registry;
+    
+    /**
+     * Constructor, setup properties
+     *
+     * @param Request object $request
+     * @param Response object $response
+     * @param Registry object $registry
+     * @return void
+     */
+    public function __construct(Request $request, Response $response, Registry $registry)
     {
         $this->Request = $request;
         $this->Response = $response;
+        $this->Registry = $registry;
     }
 
     /**

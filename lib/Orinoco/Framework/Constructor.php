@@ -16,21 +16,16 @@ class Constructor
     protected $action;
     // Application instance
     protected $app;
-    // Registry instance (class map)
-    protected $registry;
 
     /**
      * Constructor, setup properties
      *
      * @param Application object $app
-     * @param Registry object $registry
      * @return void
      */
-    public function __construct(Application $app, Registry $registry)
+    public function __construct(Application $app)
     {
         $this->app = $app;
-        $this->registry = $registry;
-
         $this->controller = $app->Request->Route->getController();
         $this->action = $app->Request->Route->getAction();
     }
@@ -50,23 +45,23 @@ class Constructor
         if (class_exists($controller)) {
 
             // load reflection of controller/class
-            $this->registry->reflectionLoad($controller);
+            $this->app->Registry->reflectionLoad($controller);
 
             // check if "__construct" method exists
             // if Yes, then get dependencies/parameters info
             $dependencies = array();
             if (method_exists($controller, '__construct')) {
-                $dependencies = $this->registry->reflectionGetMethodDependencies('__construct');
+                $dependencies = $this->app->Registry->reflectionGetMethodDependencies('__construct');
             }
 
             // instantiate the user's controller using reflector
-            $obj = $this->registry->reflectionCreateInstance($dependencies);
+            $obj = $this->app->Registry->reflectionCreateInstance($dependencies);
 
             // check if object method exists
             if (method_exists($obj, $action)) {
 
                 // check if action method needs dependency
-                $dependencies = $this->registry->reflectionGetMethodDependencies($action);
+                $dependencies = $this->app->Registry->reflectionGetMethodDependencies($action);
                 // run/call the controller's action method
                 call_user_func_array(array($obj, $action), $dependencies);
 

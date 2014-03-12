@@ -63,7 +63,7 @@ if (CHECK_PAGE_CACHE && $view->isPageCacheDirWritable() && $view->isPageCached($
         $view->setContent($cache['content']);
     }
     $view->send();
-    
+
 } else {
 
     // instantiate and register Route class, used for determining controller and action to use
@@ -74,7 +74,13 @@ if (CHECK_PAGE_CACHE && $view->isPageCacheDirWritable() && $view->isPageCached($
     $response = $registry->register(new Orinoco\Framework\Response($http, $view));
 
     // instantiate and register Application class
-    $app = $registry->register(new Orinoco\Framework\Application($request, $response));
+    $app = $registry->register(new Orinoco\Framework\Application($request, $response, $registry));
+
+    // load developer's registry config
+    $custom_registry = APPLICATION_CONFIG_DIR . 'Registry.php';
+    if (file_exists($custom_registry)) {
+        require $custom_registry;
+    }
 
     // load developer's route config
     $custom_routes = APPLICATION_CONFIG_DIR . 'Route.php';
@@ -91,7 +97,7 @@ if (CHECK_PAGE_CACHE && $view->isPageCacheDirWritable() && $view->isPageCached($
     // parse request, the actual URI parsing process. return's false if no route is found
     if ($app->Request->Route->parseRequest()) {
         // if all goes well, instantiate Constructor class
-        $constructor = new Orinoco\Framework\Constructor($app, $registry);
+        $constructor = new Orinoco\Framework\Constructor($app);
         // ...then dispatch the requested controller and action method
         $constructor->dispatch();
     } else {
