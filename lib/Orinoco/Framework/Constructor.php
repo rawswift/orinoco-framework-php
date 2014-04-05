@@ -82,12 +82,21 @@ class Constructor
             } else {
                 // no action method found!
                 $this->app->Response->Http->setHeader($this->app->Request->Http->getValue('SERVER_PROTOCOL') . ' 404 Not Found', true, 404);
-                $this->app->Response->View->setContent('Cannot find method "' . $action . '" on controller class "' . $controller . '"');
+                if (!PRODUCTION) {
+                    $this->app->Response->View->setContent('Cannot find method "' . $action . '" in controller class "' . $controller . '"');
+                } else {
+                    $this->app->Response->View->renderErrorPage($this->app, 404);
+                }
+
             }
         } else {
             // no controller class found!
             $this->app->Response->Http->setHeader($this->app->Request->Http->getValue('SERVER_PROTOCOL') . ' 404 Not Found', true, 404);
-            $this->app->Response->View->setContent('Cannot find controller class "' . $controller . '"');
+            if (!PRODUCTION) {
+                $this->app->Response->View->setContent('Cannot find controller class "' . $controller . '"');
+            } else {
+                $this->app->Response->View->renderErrorPage($this->app, 404);
+            }            
         }
         // check if we need to cache output/page and response header
         $cache_file = md5($this->app->Response->Http->getRequestURI());

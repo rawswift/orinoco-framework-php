@@ -1,1 +1,1 @@
-<p><?php echo '/' . $app->Request->Route->getController(); ?></p>
+<p><?php echo '/' . $this->app->Request->Route->getController(); ?></p>

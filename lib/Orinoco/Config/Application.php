@@ -6,19 +6,24 @@
  * Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
  */
 
+// default production mode
+if (!defined('PRODUCTION')) {
+    define('PRODUCTION', false);
+}
+
 // default PHP extension
 if (!defined('PHP_FILE_EXTENSION')) {
-	define('PHP_FILE_EXTENSION', '.php');
+    define('PHP_FILE_EXTENSION', '.php');
 }
 
 // controllers
 if (!defined('SELF_CONTROLLER')) {
-	define('SELF_CONTROLLER', 'SELF');
+    define('SELF_CONTROLLER', 'SELF');
 }
 
 // actions
 if (!defined('SELF_ACTION')) {
-	define('SELF_ACTION', 'SELF');
+    define('SELF_ACTION', 'SELF');
 }
 
 // define default controller, if it's not yet defined
@@ -43,5 +48,13 @@ if (!defined('PAGE_CACHE_EXPIRES')) {
 
 // presentation layer stuff
 if (!defined('DEFAULT_LAYOUT')) {
-	define('DEFAULT_LAYOUT', 'default');
+    define('DEFAULT_LAYOUT', 'default');
+}
+
+if (!defined('ERROR_404_PAGE')) {
+	define('ERROR_404_PAGE', '404'); // app/view/error/404.php
+}
+
+if (!defined('ERROR_500_PAGE')) {
+	define('ERROR_500_PAGE', '500'); // app/view/error/500.php
 }

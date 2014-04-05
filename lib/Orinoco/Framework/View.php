@@ -32,6 +32,17 @@ class View
     public function __construct()
     {
     }
+
+    /**
+     * Getter method
+     *
+     * @param Variable name $var_name
+     * @return Variable value
+     */
+    public function __get($var_name)
+    {
+        return $this->variables[$var_name];
+    }    
     
     /**
      * Disable view/template rendering
@@ -56,6 +67,7 @@ class View
     /**
      * Set HTML layout
      *
+     * @param Layout name     
      * @return void
      */
     public function setLayout($layout_name)
@@ -66,6 +78,8 @@ class View
     /**
      * Render presentation layout
      *
+     * @param Applicaton object $app
+     * @param Controller's variables $obj_vars (Array)
      * @return void
      */
     public function renderLayout(Application $app, $obj_vars)
@@ -73,20 +87,18 @@ class View
         $this->app = $app;
         $this->variables = $obj_vars;
 
-        // inherit variables
-        foreach($this->variables as $k => $v) {
-            $this->$k = $$k = $v;
-        }
-
-        // check if $layout is defined
-        $layout = isset($this->layout) ? $this->layout : $this->layout;
-        // check layout file
-        if(isset($layout)) {
-            $layout_file = APPLICATION_LAYOUT_DIR . str_replace(PHP_FILE_EXTENSION, '', $layout) . PHP_FILE_EXTENSION;
+        // check if layout is defined
+        if(isset($this->layout)) {
+            $layout_file = APPLICATION_LAYOUT_DIR . str_replace(PHP_FILE_EXTENSION, '', $this->layout) . PHP_FILE_EXTENSION;
             if (!file_exists($layout_file)) {
                 $app->Response->Http->setHeader($app->Request->Http->getValue('SERVER_PROTOCOL') . ' 500 Internal Server Error', true, 500);
-                $app->Response->View->setContent('It seems that "' . str_replace(ROOT_DIR, '', $layout_file) . '" does not exists.');
+                if (!PRODUCTION) {
+                    $app->Response->View->setContent('It seems that "' . str_replace(ROOT_DIR, '', $layout_file) . '" does not exists.');
+                } else {
+                    $app->Response->View->renderErrorPage($app, 500);
+                }
                 $app->Response->View->send();
+
             } else {
                 require $layout_file;
             }
@@ -95,10 +107,42 @@ class View
             if (file_exists($default_layout)) {
                 require $default_layout;
             } else {
-                $app->Response->Http->setHeader($app->Response->Response->getValue('SERVER_PROTOCOL') . ' 500 Internal Server Error', true, 500);
-                $app->Response->View->setContent('It seems that "' . str_replace(ROOT_DIR, '', $default_layout) . '" does not exists.');
+                $app->Response->Http->setHeader($app->Request->Http->getValue('SERVER_PROTOCOL') . ' 500 Internal Server Error', true, 500);
+                if (!PRODUCTION) {
+                    $app->Response->View->setContent('It seems that "' . str_replace(ROOT_DIR, '', $default_layout) . '" does not exists.');
+                } else {
+                    $app->Response->View->renderErrorPage($app, 500);
+                }
                 $app->Response->View->send();
             }
+        }
+    }
+
+    /**
+     * Render error page
+     *
+     * @param Applicaton object $app
+     * @param Error code (e.g. 404, 500, etc)
+     * @return void
+     */
+    public function renderErrorPage(Application $app, $error_code = null)
+    {
+        if (defined('ERROR_' . $error_code . '_PAGE')) {
+            $error_page = constant('ERROR_' . $error_code . '_PAGE');
+            $error_page_file = APPLICATION_ERROR_PAGE_DIR . str_replace(PHP_FILE_EXTENSION, '', $error_page) . PHP_FILE_EXTENSION;
+            if (file_exists($error_page_file)) {
+                require $error_page_file;
+            } else {
+                // error page not found? show this error message
+                $app->Response->Http->setHeader($app->Request->Http->getValue('SERVER_PROTOCOL') . ' 500 Internal Server Error', true, 500);
+                $app->Response->View->setContent('500 - Internal Server Error (Unable to render ' . $error_code . ' error page)');
+                $app->Response->View->send();
+            }
+        } else {
+            // error page not found? show this error message
+            $app->Response->Http->setHeader($app->Request->Http->getValue('SERVER_PROTOCOL') . ' 500 Internal Server Error', true, 500);
+            $app->Response->View->setContent('500 - Internal Server Error (Unable to render ' . $error_code . ' error page)');
+            $app->Response->View->send();
         }
     }
 
@@ -110,11 +154,12 @@ class View
     public function getContent()
     {
         $app = $this->app;
+        
         // inherit variables
-        foreach($this->variables as $k => $v) {
+        /*foreach($this->variables as $k => $v) {
             $this->$k = $$k = $v;
-        }
-
+        }*/
+        
         $content_view = APPLICATION_PAGE_DIR . $app->Request->Route->getController() . '/' . $app->Request->Route->getAction() . PHP_FILE_EXTENSION;
         if(!file_exists($content_view)) {
             // No verbose

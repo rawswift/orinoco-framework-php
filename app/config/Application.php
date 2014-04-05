@@ -6,6 +6,9 @@
  * Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
  */
 
+// uncomment this on production
+// define('PRODUCTION', true);
+
 // if you want to use namespace for your controllers
 // define('APPLICATION_NAMESPACE', 'MyApp');
 
