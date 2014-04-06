@@ -59,6 +59,32 @@ class AutoLoad
     }
 
     /**
+     * Try to autoload application's (developer) classes
+     *
+     * @param Class name $class_name
+     * @return void
+     */
+    public static function autoLoadApplicationClass($class_name)
+    {
+        $class_name = ltrim($class_name, '\\');
+        $file_name  = '';
+        $namespace = '';
+        if ($last_ns_pos = strrpos($class_name, '\\')) {
+            $namespace = substr($class_name, 0, $last_ns_pos);
+            $class_name = substr($class_name, $last_ns_pos + 1);
+            $file_name  = str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
+        }
+        $file_name .= str_replace('_', DIRECTORY_SEPARATOR, $class_name) . '.php';
+        // this will resolve the proper directory name, if application namespace is defined
+        if (defined('APPLICATION_NAMESPACE')) {
+            $file_name = str_replace(APPLICATION_NAMESPACE, '', $file_name);
+        }
+        if (file_exists(APPLICATION_CLASS_DIR . $file_name)) {
+            require APPLICATION_CLASS_DIR . $file_name;
+        }
+    }
+
+    /**
      * Register framework's autoload methods
      *
      * @return void
@@ -67,5 +93,6 @@ class AutoLoad
     {
         spl_autoload_register(array('Orinoco\Framework\AutoLoad', 'autoLoadFramework')); // register class Orinoco\Framework\AutoLoad::autoLoadFramework
         spl_autoload_register(array('Orinoco\Framework\AutoLoad', 'autoLoadController')); // register class Orinoco\Framework\AutoLoad::autoLoadController
+        spl_autoload_register(array('Orinoco\Framework\AutoLoad', 'autoLoadApplicationClass')); // register class Orinoco\Framework\AutoLoad::autoLoadApplicationClass
     }
 }
