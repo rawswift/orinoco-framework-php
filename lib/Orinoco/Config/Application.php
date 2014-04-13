@@ -6,9 +6,9 @@
  * Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
  */
 
-// default production mode
-if (!defined('PRODUCTION')) {
-    define('PRODUCTION', false);
+// default debug mode
+if (!defined('DEBUG')) {
+    define('DEBUG', true);
 }
 
 // default PHP extension

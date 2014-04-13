@@ -106,7 +106,7 @@ if (CHECK_PAGE_CACHE && $view->isPageCacheDirWritable() && $view->isPageCached($
         $constructor->dispatch();
     } else {
         $http->setHeader($http->getValue('SERVER_PROTOCOL') . ' 404 Not Found', true, 404);
-        if (!PRODUCTION) {
+        if (DEBUG) {
             throw new Exception('Route Not Found');
         } else {
             $view->renderErrorPage($app, 404);
