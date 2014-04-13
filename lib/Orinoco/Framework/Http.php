@@ -59,6 +59,9 @@ class Http
     /**
      * Set HTTP header (response)
      *
+     * @param mixed $header
+     * @param bool $replace
+     * @param int $http_response_code
      * @return void
      */
     public function setHeader($header, $replace = true, $http_response_code = null)
