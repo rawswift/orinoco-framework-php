@@ -72,7 +72,7 @@ class ExceptionHandler
      */
     public function exceptionHandler($exception)
     {
-        $this->http->setHeader($this->http->getValue('SERVER_PROTOCOL') . ' 500 Internal Server Error', true, 500);
+        $this->http->setHeader($this->http->getValue('SERVER_PROTOCOL') . ' 500 Internal Server Error', false, 500);
         $this->view->setContent('EXCEPTION: ' . $exception->getMessage() . '<br />BACKTRACE: <pre><code>' . $exception->getTraceAsString() . '</code></pre><br />');
         // re-throw exception, so that it'll appear in the log file
         throw $exception;
