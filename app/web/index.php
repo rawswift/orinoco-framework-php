@@ -47,10 +47,6 @@ if (file_exists($app_default_config)) {
 $http = $registry->register(new Orinoco\Framework\Http($_SERVER));
 $view = $registry->register(new Orinoco\Framework\View());
 
-// register Exception handler
-$exception = $registry->register(new Orinoco\Framework\ExceptionHandler($http, $view));
-$exception->register();
-
 // used for checking page cache
 $cache_file = md5($http->getRequestURI());
 
@@ -79,6 +75,10 @@ if (CHECK_PAGE_CACHE && $view->isPageCacheDirWritable() && $view->isPageCached($
 
     // instantiate and register Application class
     $app = $registry->register(new Orinoco\Framework\Application($request, $response, $registry));
+
+    // register Exception handler
+    $exception = $registry->register(new Orinoco\Framework\ExceptionHandler($app));
+    $exception->register();
 
     // load developer's registry config
     $custom_registry = APPLICATION_CONFIG_DIR . 'Registry.php';
