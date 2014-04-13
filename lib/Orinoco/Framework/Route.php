@@ -26,6 +26,8 @@ class Route
     public $path;
     // URI segments storage (e.g. /foo/:name/:id)
     public $segments = array();
+    // Registry instance
+    private $registry;
 
     /**
      * Constructor, setup properties
@@ -33,9 +35,10 @@ class Route
      * @param request URI $request_uri
      * @return void
      */
-    public function __construct(Http $http)
+    public function __construct(Http $http, Registry $registry)
     {
         $this->request_uri = $http->getRequestURI();
+        $this->registry = $registry;
     }
 
     /**
@@ -142,6 +145,10 @@ class Route
                         array_shift($segment_keys);
                         foreach ($segment_keys[0] as $key => $name) {
                             $this->segments[$name] = $matches[$key];
+                        }
+                        // register segments on Registry (container)
+                        if (!empty($this->segments)) {
+                            $this->registry->register($this->segments);
                         }
                     }
                 }

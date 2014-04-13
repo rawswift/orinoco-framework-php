@@ -10,8 +10,8 @@ namespace Orinoco\Framework;
 
 class Registry extends Reflector
 {
-    // class registry (container/map)
-    protected $registry;
+    // container
+    protected $container;
 
     /**
      * Constructor, nothing to do, as of now
@@ -24,30 +24,39 @@ class Registry extends Reflector
     }
 
     /**
-     * Register/map class object
+     * Register/map object or segments
      *
-     * @param object $obj
-     * @return object
+     * @param object/array $mixed
+     * @return object/array
      */
-    public function register($obj)
+    public function register($mixed)
     {
-        if (!isset($this->registry[get_class($obj)])) {
-            $this->registry[get_class($obj)] = $obj;
-            return $obj;
+        if (is_object($mixed)) {
+            if (!isset($this->container[get_class($mixed)])) {
+                // store object
+                $this->container[get_class($mixed)] = $mixed;
+                return $mixed;
+            }
+        } else if (is_array($mixed)) {
+            // iterate and store key/value pair
+            foreach ($mixed as $k => $v) {
+                $this->container[$k] = $v;
+            }
+            return true;
         }
         return false;
-    }
+    }    
 
     /**
-     * Get/resolve registered class, by name
+     * Get/resolve registered object or segment, by name
      *
-     * @param string $class_name
-     * @return string or boolean
+     * @param string $name
+     * @return object, mixed or boolean
      */
-    public function resolve($class_name)
+    public function resolve($name)
     {
-        if (isset($this->registry[$class_name])) {
-            return $this->registry[$class_name];
+        if (isset($this->container[$name])) {
+            return $this->container[$name];
         }
         return false;
     }

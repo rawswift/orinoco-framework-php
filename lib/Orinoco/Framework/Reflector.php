@@ -76,7 +76,14 @@ class Reflector
             $dependencies = array();
             for ($c = 0; $c <= $count; $c++) {
                 $info = $this->reflectionParameterInfo($method_name, $c);
-                $dependency = $info->getClass()->name;
+
+                // check if dependency is a class object or part of URL segment
+                if (isset($info->getClass()->name)) {
+                    $dependency = $info->getClass()->name;
+                } else {
+                    $dependency = $info->name;
+                }
+
                 // get required dependency from Registry
                 if ($d = $this->resolve($dependency)) {
                     $dependencies[] = $d;

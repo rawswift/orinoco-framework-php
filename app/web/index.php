@@ -71,7 +71,7 @@ if (CHECK_PAGE_CACHE && $view->isPageCacheDirWritable() && $view->isPageCached($
 } else {
 
     // instantiate and register Route class, used for determining controller and action to use
-    $route = $registry->register(new Orinoco\Framework\Route($http));
+    $route = $registry->register(new Orinoco\Framework\Route($http, $registry));
 
     // instantiate and register Request and Response class
     $request = $registry->register(new Orinoco\Framework\Request($http, $route));
