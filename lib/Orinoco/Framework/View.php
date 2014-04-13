@@ -8,6 +8,8 @@
 
 namespace Orinoco\Framework;
 
+use RuntimeException;
+
 class View
 {
     // layout name
@@ -93,7 +95,7 @@ class View
             if (!file_exists($layout_file)) {
                 $app->Response->Http->setHeader($app->Request->Http->getValue('SERVER_PROTOCOL') . ' 500 Internal Server Error', true, 500);
                 if (!PRODUCTION) {
-                    $app->Response->View->setContent('It seems that "' . str_replace(ROOT_DIR, '', $layout_file) . '" does not exists.');
+                    throw new RuntimeException('It seems that "' . str_replace(ROOT_DIR, '', $layout_file) . '" does not exists.');
                 } else {
                     $app->Response->View->renderErrorPage($app, 500);
                 }
@@ -109,7 +111,7 @@ class View
             } else {
                 $app->Response->Http->setHeader($app->Request->Http->getValue('SERVER_PROTOCOL') . ' 500 Internal Server Error', true, 500);
                 if (!PRODUCTION) {
-                    $app->Response->View->setContent('It seems that "' . str_replace(ROOT_DIR, '', $default_layout) . '" does not exists.');
+                    throw new RuntimeException('It seems that "' . str_replace(ROOT_DIR, '', $default_layout) . '" does not exists.');
                 } else {
                     $app->Response->View->renderErrorPage($app, 500);
                 }

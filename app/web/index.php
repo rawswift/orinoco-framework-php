@@ -47,6 +47,10 @@ if (file_exists($app_default_config)) {
 $http = $registry->register(new Orinoco\Framework\Http($_SERVER));
 $view = $registry->register(new Orinoco\Framework\View());
 
+// register Exception handler
+$exception = $registry->register(new Orinoco\Framework\ExceptionHandler($http, $view));
+$exception->register();
+
 // used for checking page cache
 $cache_file = md5($http->getRequestURI());
 
@@ -103,7 +107,7 @@ if (CHECK_PAGE_CACHE && $view->isPageCacheDirWritable() && $view->isPageCached($
     } else {
         $http->setHeader($http->getValue('SERVER_PROTOCOL') . ' 404 Not Found', true, 404);
         if (!PRODUCTION) {
-            $view->setContent('Route Not Found');
+            throw new Exception('Route Not Found');
         } else {
             $view->renderErrorPage($app, 404);
         }

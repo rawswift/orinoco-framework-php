@@ -8,6 +8,8 @@
 
 namespace Orinoco\Framework;
 
+use RuntimeException;
+
 class Constructor
 {
     // controller name
@@ -83,7 +85,7 @@ class Constructor
                 // no action method found!
                 $this->app->Response->Http->setHeader($this->app->Request->Http->getValue('SERVER_PROTOCOL') . ' 404 Not Found', true, 404);
                 if (!PRODUCTION) {
-                    $this->app->Response->View->setContent('Cannot find method "' . $action . '" in controller class "' . $controller . '"');
+                    throw new RuntimeException('Cannot find method "' . $action . '" in controller class "' . $controller . '"');
                 } else {
                     $this->app->Response->View->renderErrorPage($this->app, 404);
                 }
@@ -93,7 +95,7 @@ class Constructor
             // no controller class found!
             $this->app->Response->Http->setHeader($this->app->Request->Http->getValue('SERVER_PROTOCOL') . ' 404 Not Found', true, 404);
             if (!PRODUCTION) {
-                $this->app->Response->View->setContent('Cannot find controller class "' . $controller . '"');
+                throw new RuntimeException('Cannot find controller class "' . $controller . '"');
             } else {
                 $this->app->Response->View->renderErrorPage($this->app, 404);
             }            
