@@ -13,8 +13,9 @@ class RouteTest extends PHPUnit_Framework_TestCase
 
     public function testSetupRoute()
     {
-        $http = new Orinoco\Framework\Http($this->mock);       
-        $route = new Orinoco\Framework\Route($http);
+        $http = new Orinoco\Framework\Http($this->mock);   
+        $registry = new Orinoco\Framework\Registry();    
+        $route = new Orinoco\Framework\Route($http, $registry);
         $route->setRoute('/foo/:id', array(
             'controller' => 'foo',
             'action' => 'bar',

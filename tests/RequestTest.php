@@ -14,7 +14,8 @@ class RequestTest extends PHPUnit_Framework_TestCase
     public function testSetupRequest()
     {
         $http = new Orinoco\Framework\Http($this->mock);
-        $route = new Orinoco\Framework\Route($http);
+        $registry = new Orinoco\Framework\Registry();
+        $route = new Orinoco\Framework\Route($http, $registry);
         $request = new Orinoco\Framework\Request($http, $route);
         return $request;
     }
