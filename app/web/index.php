@@ -6,10 +6,8 @@
  * Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
  */
 
-// Turn ON all error reporting
+// by default, turn ON all error reporting
 error_reporting(E_ALL);
-// ...or turn it OFF
-// error_reporting(0);
 
 // start output buffering, let View class handle the flushing of contents
 ob_start();
@@ -37,10 +35,20 @@ if (file_exists($app_config)) {
     require $app_config;
 }
 
+// check if we need to turn OFF errors
+if (!DEBUG) {
+    error_reporting(0);
+}
+
 // load framework's config (default app config)
 $app_default_config = FRAMEWORK_CONFIG_DIR . 'Application.php';
 if (file_exists($app_default_config)) {
     require $app_default_config;
+}
+
+// check if we need to start session
+if(SESSION && (session_id() === "")) {
+    session_start();
 }
 
 // instantiate and register required framework libs

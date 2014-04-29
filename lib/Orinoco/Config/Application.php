@@ -11,6 +11,11 @@ if (!defined('DEBUG')) {
     define('DEBUG', true);
 }
 
+// enable session, default is True
+if (!defined('SESSION')) {
+    define('SESSION', true);
+}
+
 // default PHP extension
 if (!defined('PHP_FILE_EXTENSION')) {
     define('PHP_FILE_EXTENSION', '.php');
