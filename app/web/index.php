@@ -29,21 +29,21 @@ if (file_exists(APPLICATION_VENDOR_DIR . 'autoload.php')) {
 // instantiate Registry class (class/object mapper)
 $registry = new Orinoco\Framework\Registry();
 
-// load developer's config, if available
+// load developer's config (if available)
 $app_config = APPLICATION_CONFIG_DIR . 'Application.php';
 if (file_exists($app_config)) {
     require $app_config;
-}
-
-// check if we need to turn OFF errors
-if (!DEBUG) {
-    error_reporting(0);
 }
 
 // load framework's config (default app config)
 $app_default_config = FRAMEWORK_CONFIG_DIR . 'Application.php';
 if (file_exists($app_default_config)) {
     require $app_default_config;
+}
+
+// check if we need to turn OFF errors
+if (!DEBUG) {
+    error_reporting(0);
 }
 
 // check if we need to start session
