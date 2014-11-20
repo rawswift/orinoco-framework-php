@@ -24,6 +24,8 @@ class View
     private $app;
     // Passed controller's variables (to be used by view template)
     private $variables;    
+    // explicit view page
+    private $page_view;
 
     /**
      * Constructor
@@ -75,6 +77,40 @@ class View
     public function setLayout($layout_name)
     {
         $this->layout = $layout_name;
+    }
+
+    /**
+     * Set page/view template to use
+     *     
+     * @param Page/view name Array or String
+     * @return void
+     */
+    public function setPage($page_view)
+    {
+        // initialize default page view/template
+        $page = array(
+                'controller' => DEFAULT_CONTROLLER,
+                'action' => DEFAULT_ACTION
+            );
+        // check if passed parameter is an array
+        if (is_array($page_view)) {
+            if (isset($page_view['controller'])) {
+                $page['controller'] = $page_view['controller'];
+            }
+            if (isset($page_view['action'])) {
+                $page['action'] = $page_view['action'];
+            }
+        // string
+        } else if (is_string($page_view)) {
+            $exploded = explode('/', $page_view);
+            if (isset($exploded[0])) {
+                $page['controller'] = $exploded[0];
+            }
+            if (isset($exploded[1])) {
+                $page['action'] = $exploded[1];
+            }
+        }
+        $this->page_view = (object) $page;
     }
 
     /**
@@ -161,14 +197,24 @@ class View
         /*foreach($this->variables as $k => $v) {
             $this->$k = $$k = $v;
         }*/
-        
-        $content_view = APPLICATION_PAGE_DIR . $app->Request->Route->getController() . '/' . $app->Request->Route->getAction() . PHP_FILE_EXTENSION;
+
+        // check if page view is specified or not        
+        if (!isset($this->page_view)) {
+            $content_view = APPLICATION_PAGE_DIR . $app->Request->Route->getController() . '/' . $app->Request->Route->getAction() . PHP_FILE_EXTENSION;
+        } else {
+            print_r($this->page_view);
+            $content_view = APPLICATION_PAGE_DIR . $this->page_view->controller . '/' . $this->page_view->action . PHP_FILE_EXTENSION;
+        }
+
+        /**
+         * @todo Should we render an error page, saying something like "the page template aren't found"?
+         */
         if(!file_exists($content_view)) {
             // No verbose
             return false;
         }
         require $content_view;
-    }    
+    }
 
     /**
      * Get partial (presentation) content
