@@ -202,7 +202,6 @@ class View
         if (!isset($this->page_view)) {
             $content_view = APPLICATION_PAGE_DIR . $app->Request->Route->getController() . '/' . $app->Request->Route->getAction() . PHP_FILE_EXTENSION;
         } else {
-            print_r($this->page_view);
             $content_view = APPLICATION_PAGE_DIR . $this->page_view->controller . '/' . $this->page_view->action . PHP_FILE_EXTENSION;
         }
 
