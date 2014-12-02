@@ -72,7 +72,7 @@ Orinoco Framework v2.1 requires PHP 5.3.3 or later.
         $ mkdir myapp
         $ git clone git://github.com/rawswift/orinoco-framework-php.git myapp/
 
-2. Setup (Nginx) virtual host: (remember to point `root` to `/path/to/myapp/app/web`)
+2. Setup (Nginx) virtual host: (remember to point `root` to `/path/to/myapp/app/www`)
 
         server {
                 listen      80;
@@ -80,7 +80,7 @@ Orinoco Framework v2.1 requires PHP 5.3.3 or later.
                 access_log  /var/log/nginx/myapp.com.access.log;
                 error_log   /var/log/nginx/myapp.com.error.log;
                 rewrite_log on;
-                root        /path/to/myapp/app/web;
+                root        /path/to/myapp/app/www;
                 index       index.php;
                 if (!-e $request_filename) {
                         rewrite ^/(.+)$ /index.php last;
