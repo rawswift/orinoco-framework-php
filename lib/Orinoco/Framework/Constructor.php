@@ -75,7 +75,7 @@ class Constructor
                 }
 
                 // check if view is enabled
-                if ($this->app->Response->View->viewEnabled()) {
+                if ($this->app->Response->View->isViewEnabled()) {
                     // pass reference of Orinoco\Framework\Application object and controller object's variables
                     // ...and render layout template
                     $this->app->Response->View->renderLayout($this->app, $obj_variables);

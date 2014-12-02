@@ -22,8 +22,8 @@ class ViewTest extends PHPUnit_Framework_TestCase
      */
     public function testDisableView(Orinoco\Framework\View $view)
     {
-        $this->assertEquals(true, $view->viewEnabled()); // default: True
+        $this->assertEquals(true, $view->isViewEnabled()); // default: True
         $view->disable();
-        $this->assertEquals(false, $view->viewEnabled());
+        $this->assertEquals(false, $view->isViewEnabled());
     }    
 }

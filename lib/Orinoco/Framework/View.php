@@ -63,7 +63,7 @@ class View
      *
      * @return bool; whether or not view is enabled
      */
-    public function viewEnabled()
+    public function isViewEnabled()
     {
         return $this->view_enabled;
     }
