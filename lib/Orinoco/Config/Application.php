@@ -53,7 +53,7 @@ if (!defined('PAGE_CACHE_EXPIRES')) {
 
 // presentation layer stuff
 if (!defined('DEFAULT_LAYOUT')) {
-    define('DEFAULT_LAYOUT', 'default');
+    define('DEFAULT_LAYOUT', 'application');
 }
 
 if (!defined('ERROR_404_PAGE')) {

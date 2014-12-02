@@ -20,7 +20,7 @@ class foo
         //    ...
         //    public function __construct(View $view) {...}
         //
-        // else the framework will find and render a default template (app/views/layouts/default.php)
+        // else the framework will find and render a default template (app/views/layouts/application.php)
     }
 
     // this will be the function that'll be executed when you go to the URI: /foo
