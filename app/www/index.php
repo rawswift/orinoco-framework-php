@@ -55,11 +55,8 @@ if(SESSION && (session_id() === "")) {
 $http = $registry->register(new Orinoco\Framework\Http($_SERVER));
 $view = $registry->register(new Orinoco\Framework\View());
 
-// used for checking page cache
-$cache_file = md5($http->getRequestURI());
-
 // see if we need to check page cache
-if (CHECK_PAGE_CACHE && $view->isPageCacheDirWritable() && $view->isPageCached($cache_file)) {
+if (CHECK_PAGE_CACHE && $view->isPageCacheDirWritable() && $view->isPageCached($cache_file = md5($http->getRequestURI()))) {
 
     $cache = unserialize($view->readPageCache($cache_file));
     if (isset($cache['header'])) {
