@@ -42,7 +42,7 @@ if (file_exists($app_default_config)) {
 }
 
 // check if we need to turn OFF errors
-if (!DEBUG) {
+if (!DEVELOPMENT) {
     error_reporting(0);
 }
 
@@ -114,7 +114,7 @@ if (CHECK_PAGE_CACHE && $view->isPageCacheDirWritable() && $view->isPageCached($
         $constructor->dispatch();
     } else {
         $http->setHeader($http->getValue('SERVER_PROTOCOL') . ' 404 Not Found', true, 404);
-        if (DEBUG) {
+        if (DEVELOPMENT) {
             throw new Exception('Route Not Found');
         } else {
             $view->renderErrorPage($app, 404);

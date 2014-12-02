@@ -69,7 +69,7 @@ class ExceptionHandler
     public function exceptionHandler($exception)
     {
         $this->app->Response->Http->setHeader($this->app->Response->Http->getValue('SERVER_PROTOCOL') . ' 500 Internal Server Error', false, 500);
-        if (DEBUG) {
+        if (DEVELOPMENT) {
             $this->app->Response->View->setContent('EXCEPTION: ' . $exception->getMessage() . '<br />BACKTRACE: <pre><code>' . $exception->getTraceAsString() . '</code></pre><br />');
         } else {
             $this->app->Response->View->renderErrorPage($this->app, 500);

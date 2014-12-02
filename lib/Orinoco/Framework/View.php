@@ -130,7 +130,7 @@ class View
             $layout_file = APPLICATION_LAYOUT_DIR . str_replace(PHP_FILE_EXTENSION, '', $this->layout) . PHP_FILE_EXTENSION;
             if (!file_exists($layout_file)) {
                 $app->Response->Http->setHeader($app->Request->Http->getValue('SERVER_PROTOCOL') . ' 500 Internal Server Error', true, 500);
-                if (DEBUG) {
+                if (DEVELOPMENT) {
                     throw new RuntimeException('It seems that "' . str_replace(ROOT_DIR, '', $layout_file) . '" does not exists.');
                 } else {
                     $app->Response->View->renderErrorPage($app, 500);
@@ -146,7 +146,7 @@ class View
                 require $default_layout;
             } else {
                 $app->Response->Http->setHeader($app->Request->Http->getValue('SERVER_PROTOCOL') . ' 500 Internal Server Error', true, 500);
-                if (DEBUG) {
+                if (DEVELOPMENT) {
                     throw new RuntimeException('It seems that "' . str_replace(ROOT_DIR, '', $default_layout) . '" does not exists.');
                 } else {
                     $app->Response->View->renderErrorPage($app, 500);

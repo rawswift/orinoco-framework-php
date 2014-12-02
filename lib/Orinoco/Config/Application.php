@@ -7,8 +7,8 @@
  */
 
 // default debug mode
-if (!defined('DEBUG')) {
-    define('DEBUG', true);
+if (!defined('DEVELOPMENT')) {
+    define('DEVELOPMENT', true);
 }
 
 // enable session, default is True

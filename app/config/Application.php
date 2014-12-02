@@ -7,7 +7,7 @@
  */
 
 // uncomment this on production
-// define('DEBUG', false);
+// define('DEVELOPMENT', false);
 
 // if you want to use namespace for your controllers
 // define('APPLICATION_NAMESPACE', 'MyApp');

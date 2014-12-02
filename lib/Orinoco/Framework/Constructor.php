@@ -84,7 +84,7 @@ class Constructor
             } else {
                 // no action method found!
                 $this->app->Response->Http->setHeader($this->app->Request->Http->getValue('SERVER_PROTOCOL') . ' 404 Not Found', true, 404);
-                if (DEBUG) {
+                if (DEVELOPMENT) {
                     throw new RuntimeException('Cannot find method "' . $action . '" in controller class "' . $controller . '"');
                 } else {
                     $this->app->Response->View->renderErrorPage($this->app, 404);
@@ -94,7 +94,7 @@ class Constructor
         } else {
             // no controller class found!
             $this->app->Response->Http->setHeader($this->app->Request->Http->getValue('SERVER_PROTOCOL') . ' 404 Not Found', true, 404);
-            if (DEBUG) {
+            if (DEVELOPMENT) {
                 throw new RuntimeException('Cannot find controller class "' . $controller . '"');
             } else {
                 $this->app->Response->View->renderErrorPage($this->app, 404);
