@@ -41,16 +41,6 @@ if (!defined('DEFAULT_ACTION')) {
     define('DEFAULT_ACTION', 'index');
 }
 
-// define page cache checker, if it's not yet defined
-if (!defined('CHECK_PAGE_CACHE')) {
-    define('CHECK_PAGE_CACHE', false);
-}
-
-// define page cache expiry time, if it's not yet defined
-if (!defined('PAGE_CACHE_EXPIRES')) {
-    define('PAGE_CACHE_EXPIRES', 900); // 15mins
-}
-
 // presentation layer stuff
 if (!defined('DEFAULT_LAYOUT')) {
     define('DEFAULT_LAYOUT', 'application');

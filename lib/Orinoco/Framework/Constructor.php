@@ -100,16 +100,6 @@ class Constructor
                 $this->app->Response->View->renderErrorPage($this->app, 404);
             }            
         }
-        // check if we need to cache output/page and response header
-        $cache_file = md5($this->app->Response->Http->getRequestURI());
-        if ($this->app->Response->View->cachePage() && $this->app->Response->View->isPageCacheDirWritable() && !$this->app->Response->View->isPageCached($cache_file)) {
-            // serialize before storing
-            $cache = array(
-                    'header' => headers_list(),
-                    'content' => ob_get_contents()
-                );
-            $this->app->Response->View->writePageCache($cache_file, serialize($cache));
-        }
         // flush the response
         $this->app->Response->View->send();
     }

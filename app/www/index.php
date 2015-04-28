@@ -55,70 +55,52 @@ if(SESSION && (session_id() === "")) {
 $http = $registry->register(new Orinoco\Framework\Http($_SERVER));
 $view = $registry->register(new Orinoco\Framework\View());
 
-// see if we need to check page cache
-if (CHECK_PAGE_CACHE && $view->isPageCacheDirWritable() && $view->isPageCached($cache_file = md5($http->getRequestURI()))) {
+// instantiate and register Route class, used for determining controller and action to use
+$route = $registry->register(new Orinoco\Framework\Route($http, $registry));
 
-    $cache = unserialize($view->readPageCache($cache_file));
-    if (isset($cache['header'])) {
-        foreach ($cache['header'] as $k => $v) {
-            $http->setHeader($v);
-        }
-    }
-    if (isset($cache['content'])) {
-        $view->setContent($cache['content']);
+// instantiate and register Request and Response class
+$request = $registry->register(new Orinoco\Framework\Request($http, $route));
+$response = $registry->register(new Orinoco\Framework\Response($http, $view));
+
+// instantiate and register Application class
+$app = $registry->register(new Orinoco\Framework\Application($request, $response, $registry));
+
+// register Exception handler
+$exception = $registry->register(new Orinoco\Framework\ExceptionHandler($app));
+$exception->register();
+
+// load developer's registry config
+$custom_registry = APPLICATION_CONFIG_DIR . 'Registry.php';
+if (file_exists($custom_registry)) {
+    require $custom_registry;
+}
+
+// load developer's route config
+$custom_routes = APPLICATION_CONFIG_DIR . 'Route.php';
+if (file_exists($custom_routes)) {
+    require $custom_routes;
+}
+
+// load common/default route rules
+$common_routes = FRAMEWORK_CONFIG_DIR . 'Route.php';
+if (file_exists($common_routes)) {
+    require $common_routes;
+}
+
+// parse request, the actual URI parsing process. return's false if no route is found
+if ($app->Request->Route->parseRequest()) {
+    // if all goes well, instantiate Constructor class
+    $constructor = new Orinoco\Framework\Constructor($app);
+    // ...then dispatch the requested controller and action method
+    $constructor->dispatch();
+} else {
+    $http->setHeader($http->getValue('SERVER_PROTOCOL') . ' 404 Not Found', true, 404);
+    if (DEVELOPMENT) {
+        throw new Exception('Route Not Found');
+    } else {
+        $view->renderErrorPage($app, 404);
     }
     $view->send();
-
-} else {
-
-    // instantiate and register Route class, used for determining controller and action to use
-    $route = $registry->register(new Orinoco\Framework\Route($http, $registry));
-
-    // instantiate and register Request and Response class
-    $request = $registry->register(new Orinoco\Framework\Request($http, $route));
-    $response = $registry->register(new Orinoco\Framework\Response($http, $view));
-
-    // instantiate and register Application class
-    $app = $registry->register(new Orinoco\Framework\Application($request, $response, $registry));
-
-    // register Exception handler
-    $exception = $registry->register(new Orinoco\Framework\ExceptionHandler($app));
-    $exception->register();
-
-    // load developer's registry config
-    $custom_registry = APPLICATION_CONFIG_DIR . 'Registry.php';
-    if (file_exists($custom_registry)) {
-        require $custom_registry;
-    }
-
-    // load developer's route config
-    $custom_routes = APPLICATION_CONFIG_DIR . 'Route.php';
-    if (file_exists($custom_routes)) {
-        require $custom_routes;
-    }
-
-    // load common/default route rules
-    $common_routes = FRAMEWORK_CONFIG_DIR . 'Route.php';
-    if (file_exists($common_routes)) {
-        require $common_routes;
-    }
-
-    // parse request, the actual URI parsing process. return's false if no route is found
-    if ($app->Request->Route->parseRequest()) {
-        // if all goes well, instantiate Constructor class
-        $constructor = new Orinoco\Framework\Constructor($app);
-        // ...then dispatch the requested controller and action method
-        $constructor->dispatch();
-    } else {
-        $http->setHeader($http->getValue('SERVER_PROTOCOL') . ' 404 Not Found', true, 404);
-        if (DEVELOPMENT) {
-            throw new Exception('Route Not Found');
-        } else {
-            $view->renderErrorPage($app, 404);
-        }
-        $view->send();
-    }
-
 }
 
 // cleanup output buffer
