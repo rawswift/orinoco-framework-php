@@ -9,21 +9,25 @@
 namespace Orinoco\Framework;
 
 use ErrorException;
-use Orinoco\Framework\Application as Application;
+use Orinoco\Framework\Http as Http;
+use Orinoco\Framework\View as View;
 
 class ExceptionHandler
 {
-    protected $app;
+    private $http;
+    private $view;
 
     /**
      * Constructor, setup properties/dependencies
      *
-     * @param Application object $app
+     * @param Http object $http
+     * @param View object $view
      * @return void
      */
-    public function __construct(Application $app)
+    public function __construct(Http $http, View $view)
     {
-        $this->app = $app;
+        $this->http = $http;
+        $this->view = $view;
     }
 
     /**
@@ -68,11 +72,11 @@ class ExceptionHandler
      */
     public function exceptionHandler($exception)
     {
-        $this->app->Response->Http->setHeader($this->app->Response->Http->getValue('SERVER_PROTOCOL') . ' 500 Internal Server Error', false, 500);
+        $this->http->setHeader($this->http->getValue('SERVER_PROTOCOL') . ' 500 Internal Server Error', false, 500);
         if (DEVELOPMENT) {
-            $this->app->Response->View->setContent('EXCEPTION: ' . $exception->getMessage() . '<br />BACKTRACE: <pre><code>' . $exception->getTraceAsString() . '</code></pre><br />');
+            $this->view->setContent('EXCEPTION: ' . $exception->getMessage() . '<br />BACKTRACE: <pre><code>' . $exception->getTraceAsString() . '</code></pre><br />');
         } else {
-            $this->app->Response->View->renderErrorPage($this->app, 500);
+            $this->view->renderErrorPage($this->app, 500);
         }
     }
 

@@ -51,22 +51,21 @@ if(SESSION && (session_id() === "")) {
     session_start();
 }
 
-// instantiate and register required framework libs
+// instantiate and register Http class
 $http = $registry->register(new Orinoco\Framework\Http($_SERVER));
-$view = $registry->register(new Orinoco\Framework\View());
 
 // instantiate and register Route class, used for determining controller and action to use
 $route = $registry->register(new Orinoco\Framework\Route($http, $registry));
+
+// instantiate and register View class
+$view = $registry->register(new Orinoco\Framework\View($http, $route));
 
 // instantiate and register Request and Response class
 $request = $registry->register(new Orinoco\Framework\Request($http, $route));
 $response = $registry->register(new Orinoco\Framework\Response($http, $view));
 
-// instantiate and register Application class
-$app = $registry->register(new Orinoco\Framework\Application($request, $response, $registry));
-
 // register Exception handler
-$exception = $registry->register(new Orinoco\Framework\ExceptionHandler($app));
+$exception = $registry->register(new Orinoco\Framework\ExceptionHandler($http, $view));
 $exception->register();
 
 // load developer's registry config
@@ -87,12 +86,12 @@ if (file_exists($common_routes)) {
     require $common_routes;
 }
 
-// parse request, the actual URI parsing process. return's false if no route is found
-if ($app->Request->Route->parseRequest()) {
-    // if all goes well, instantiate Constructor class
-    $constructor = new Orinoco\Framework\Constructor($app);
-    // ...then dispatch the requested controller and action method
-    $constructor->dispatch();
+// parse request, the actual URI parsing process
+if ($route->parseRequest()) {
+    // if all goes well, instantiate Application class
+    $application = new Orinoco\Framework\Application($request, $response, $registry);
+    // ...then run the application
+    $application->run();
 } else {
     $http->setHeader($http->getValue('SERVER_PROTOCOL') . ' 404 Not Found', true, 404);
     if (DEVELOPMENT) {
@@ -100,8 +99,9 @@ if ($app->Request->Route->parseRequest()) {
     } else {
         $view->renderErrorPage($app, 404);
     }
-    $view->send();
 }
+
+$view->send();
 
 // cleanup output buffer
 ob_end_clean();

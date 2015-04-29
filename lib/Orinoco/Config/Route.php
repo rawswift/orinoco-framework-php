@@ -13,10 +13,10 @@
  */
 
 // [/controller/action/] or [/controller/action] e.g. /foo/bar
-$app->Request->Route->setRoute('(^\/+[a-zA-Z]+\/+[a-zA-Z]([^/]+)/?$)', array('controller' => SELF_CONTROLLER, 'action' => SELF_ACTION));
+$route->setRoute('(^\/+[a-zA-Z]+\/+[a-zA-Z]([^/]+)/?$)', array('controller' => SELF_CONTROLLER, 'action' => SELF_ACTION));
 
 // [/controller/] or [/controller] e.g. /foo
-$app->Request->Route->setRoute('(^\/+[a-zA-Z]([^/]+)/?$)', array('controller' => SELF_CONTROLLER, 'action' => DEFAULT_ACTION));
+$route->setRoute('(^\/+[a-zA-Z]([^/]+)/?$)', array('controller' => SELF_CONTROLLER, 'action' => DEFAULT_ACTION));
 
 // index/root (e.g. http://www.domain.tld/)
-$app->Request->Route->setRoute('(^\/$)', array('controller' => DEFAULT_CONTROLLER, 'action' => DEFAULT_ACTION));
+$route->setRoute('(^\/$)', array('controller' => DEFAULT_CONTROLLER, 'action' => DEFAULT_ACTION));

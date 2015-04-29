@@ -9,6 +9,6 @@
 // you can register classes here, for controller dependency injection purposes
 // e.g. third-party vendors, for example:
 /**
- *    $app->Registry->register(new Monolog\Logger('name'));
- *    $app->Registry->register(new Monolog\Handler\StreamHandler('/tmp/monolog.txt', Monolog\Logger::WARNING));
+ *    $registry->register(new Monolog\Logger('name'));
+ *    $registry->register(new Monolog\Handler\StreamHandler('/tmp/monolog.txt', Monolog\Logger::WARNING));
  */

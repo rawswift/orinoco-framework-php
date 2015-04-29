@@ -1,5 +1,7 @@
 <?php
 
+use Orinoco\Framework\View as View;
+
 class index
 {
     public function __construct()
@@ -7,8 +9,8 @@ class index
         // code here are always executed
     }
 
-    public function index()
+    public function index(View $view)
     {
-        // do nothing and let the framework render the associated layout and content template
+    	return $view->render('index');
     }
 }

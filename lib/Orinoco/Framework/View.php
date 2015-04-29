@@ -9,19 +9,17 @@
 namespace Orinoco\Framework;
 
 use RuntimeException;
+use Orinoco\Framework\Http as Http;
+use Orinoco\Framework\Request as Request;
 
 class View
 {
     // layout name
     public $layout;
-    // whether or not to render view/template (HTML layout and HTML contents)
-    // default is true (render view/template)
-    public $view_enabled = true;
-    // whether or not to cache output/page and response header
-    // default is false (do not cache)
-    public $cache_page = false;
-    // Orinoco\Framework\Application class
-    private $app;
+    // Orinoco\Framework\Http class
+    private $http;
+    // Orinoco\Framework\Route class
+    private $route;
     // Passed controller's variables (to be used by view template)
     private $variables;    
     // explicit view page
@@ -30,11 +28,14 @@ class View
     /**
      * Constructor
      *
-     * @param void
+     * @param Http object $http
+     * @param View object $view
      * @return void
      */
-    public function __construct()
+    public function __construct(Http $http, Route $route)
     {
+        $this->http = $http;
+        $this->route = $route;
     }
 
     /**
@@ -45,29 +46,12 @@ class View
      */
     public function __get($var_name)
     {
-        return $this->variables[$var_name];
+        if (isset($this->variables[$var_name])) {
+            return $this->variables[$var_name];
+        }
+        return false;
     }    
     
-    /**
-     * Disable view/template rendering
-     *
-     * @return void
-     */
-    public function disable()
-    {
-        $this->view_enabled = false;
-    }
-
-    /**
-     * Get view flag
-     *
-     * @return bool; whether or not view is enabled
-     */
-    public function isViewEnabled()
-    {
-        return $this->view_enabled;
-    }
-
     /**
      * Set HTML layout
      *
@@ -89,8 +73,10 @@ class View
     {
         // initialize default page view/template
         $page = array(
-                'controller' => DEFAULT_CONTROLLER,
-                'action' => DEFAULT_ACTION
+                // 'controller' => DEFAULT_CONTROLLER,
+                'controller' => $this->route->getController(),
+                // 'action' => DEFAULT_ACTION
+                'action' => $this->route->getAction()
             );
         // check if passed parameter is an array
         if (is_array($page_view)) {
@@ -102,56 +88,67 @@ class View
             }
         // string
         } else if (is_string($page_view)) {
-            $exploded = explode('/', $page_view);
-            if (isset($exploded[0])) {
-                $page['controller'] = $exploded[0];
-            }
-            if (isset($exploded[1])) {
-                $page['action'] = $exploded[1];
+            // $exploded = explode('/', $page_view); // use '/' as separator
+            $exploded = explode('#', $page_view); // use '#' as separator
+            if (count($exploded) > 1) {
+                if (isset($exploded[0])) {
+                    $page['controller'] = $exploded[0];
+                }
+                if (isset($exploded[1])) {
+                    $page['action'] = $exploded[1];
+                }
+            } else {
+                $page['action'] = $page_view;
             }
         }
         $this->page_view = (object) $page;
     }
 
     /**
-     * Render presentation layout
-     *
-     * @param Applicaton object $app
-     * @param Controller's variables $obj_vars (Array)
+     * Render view template/page (including layout)
+     *     
+     * @param $page_view Explicit page view/template
+     * @param $obj_vars Variables to be passed to the layout and page template
      * @return void
      */
-    public function renderLayout(Application $app, $obj_vars)
+    public function render($page_view = null, $obj_vars = array())
     {
-        $this->app = $app;
+
+        if (isset($page_view)) {
+            $this->setPage($page_view);
+        }
+
+        // store variables (to be passed to the layout and page template)
+        // accessible via '__get' method
         $this->variables = $obj_vars;
 
         // check if layout is defined
         if(isset($this->layout)) {
             $layout_file = APPLICATION_LAYOUT_DIR . str_replace(PHP_FILE_EXTENSION, '', $this->layout) . PHP_FILE_EXTENSION;
             if (!file_exists($layout_file)) {
-                $app->Response->Http->setHeader($app->Request->Http->getValue('SERVER_PROTOCOL') . ' 500 Internal Server Error', true, 500);
+                $this->http->setHeader($this->http->getValue('SERVER_PROTOCOL') . ' 500 Internal Server Error', true, 500);
                 if (DEVELOPMENT) {
                     throw new RuntimeException('It seems that "' . str_replace(ROOT_DIR, '', $layout_file) . '" does not exists.');
                 } else {
-                    $app->Response->View->renderErrorPage($app, 500);
+                    $this->renderErrorPage(500);
                 }
-                $app->Response->View->send();
+                $this->send();
 
             } else {
                 require $layout_file;
             }
         } else {
-            $default_layout = $app->Response->View->getDefaultLayout();
+            $default_layout = $this->getDefaultLayout();
             if (file_exists($default_layout)) {
                 require $default_layout;
             } else {
-                $app->Response->Http->setHeader($app->Request->Http->getValue('SERVER_PROTOCOL') . ' 500 Internal Server Error', true, 500);
+                $this->http->setHeader($this->http->getValue('SERVER_PROTOCOL') . ' 500 Internal Server Error', true, 500);
                 if (DEVELOPMENT) {
                     throw new RuntimeException('It seems that "' . str_replace(ROOT_DIR, '', $default_layout) . '" does not exists.');
                 } else {
-                    $app->Response->View->renderErrorPage($app, 500);
+                    $this->renderErrorPage(500);
                 }
-                $app->Response->View->send();
+                $this->send();
             }
         }
     }
@@ -163,7 +160,7 @@ class View
      * @param Error code (e.g. 404, 500, etc)
      * @return void
      */
-    public function renderErrorPage(Application $app, $error_code = null)
+    public function renderErrorPage($error_code = null)
     {
         if (defined('ERROR_' . $error_code . '_PAGE')) {
             $error_page = constant('ERROR_' . $error_code . '_PAGE');
@@ -172,15 +169,15 @@ class View
                 require $error_page_file;
             } else {
                 // error page not found? show this error message
-                $app->Response->Http->setHeader($app->Request->Http->getValue('SERVER_PROTOCOL') . ' 500 Internal Server Error', true, 500);
-                $app->Response->View->setContent('500 - Internal Server Error (Unable to render ' . $error_code . ' error page)');
-                $app->Response->View->send();
+                $this->http->setHeader($this->http->getValue('SERVER_PROTOCOL') . ' 500 Internal Server Error', true, 500);
+                $this->setContent('500 - Internal Server Error (Unable to render ' . $error_code . ' error page)');
+                $this->send();
             }
         } else {
             // error page not found? show this error message
-            $app->Response->Http->setHeader($app->Request->Http->getValue('SERVER_PROTOCOL') . ' 500 Internal Server Error', true, 500);
-            $app->Response->View->setContent('500 - Internal Server Error (Unable to render ' . $error_code . ' error page)');
-            $app->Response->View->send();
+            $this->http->setHeader($this->http->getValue('SERVER_PROTOCOL') . ' 500 Internal Server Error', true, 500);
+            $this->setContent('500 - Internal Server Error (Unable to render ' . $error_code . ' error page)');
+            $this->send();
         }
     }
 
@@ -191,16 +188,9 @@ class View
      */
     public function getContent()
     {
-        $app = $this->app;
-        
-        // inherit variables
-        /*foreach($this->variables as $k => $v) {
-            $this->$k = $$k = $v;
-        }*/
-
         // check if page view is specified or not        
         if (!isset($this->page_view)) {
-            $content_view = APPLICATION_PAGE_DIR . $app->Request->Route->getController() . '/' . $app->Request->Route->getAction() . PHP_FILE_EXTENSION;
+            $content_view = APPLICATION_PAGE_DIR . $this->route->getController() . '/' . $this->route->getAction() . PHP_FILE_EXTENSION;
         } else {
             $content_view = APPLICATION_PAGE_DIR . $this->page_view->controller . '/' . $this->page_view->action . PHP_FILE_EXTENSION;
         }
@@ -268,6 +258,65 @@ class View
     private function getDefaultLayout()
     {
         return APPLICATION_LAYOUT_DIR . DEFAULT_LAYOUT . PHP_FILE_EXTENSION;
+    }
+
+    /**
+     * Construct JSON string (and also set HTTP header as 'application/json')
+     *
+     * @param $data Array
+     * @return void
+     */
+    public function renderJSON($data = array())
+    {
+        $json = json_encode($data);
+        $this->http->setHeader(array(
+                'Content-Length' => strlen($json),
+                'Content-type' => 'application/json;'
+            ));
+        $this->setContent($json);
+    }
+
+    /**
+     * Redirect using header
+     *
+     * @param string|array $mixed
+     * @param Use 'refresh' instead of 'location' $use_refresh
+     * @param Time to refresh $refresh_time
+     * @return void
+     */
+    public function redirect($mixed, $use_refresh = false, $refresh_time = 3)
+    {
+        $url = null;
+        if (is_string($mixed)) {
+            $url = trim($mixed);
+        } else if (is_array($mixed)) {
+            $controller = $this->Request->Route->getController();
+            $action = null;
+            if (isset($mixed['controller'])) {
+                $controller = trim($mixed['controller']);
+            }
+            $url = '/' . $controller;
+            if (isset($mixed['action'])) {
+                $action = trim($mixed['action']);
+            }
+            if (isset($action)) {
+                $url .= '/' . $action;
+            }
+            if (isset($mixed['query'])) {
+                $query = '?';
+                foreach ($mixed['query'] as $k => $v) {
+                    $query .= $k . '=' . urlencode($v) . '&';
+                }
+                $query[strlen($query) - 1] = '';
+                $query = trim($query);
+                $url .= $query;
+            }
+        }
+        if (!$use_refresh) {
+            $this->http->setHeader('Location: ' . $url);
+        } else {
+            $this->http->setHeader('refresh:' . $refresh_time . ';url=' . $url);
+        }
     }
 
 }

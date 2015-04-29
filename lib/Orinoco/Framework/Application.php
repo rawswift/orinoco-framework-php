@@ -8,6 +8,8 @@
 
 namespace Orinoco\Framework;
 
+use RuntimeException;
+
 class Application
 {
     public $Request;
@@ -30,45 +32,62 @@ class Application
     }
 
     /**
-     * Redirect using header
+     * Run application, instantiate controller class and execute action method
      *
-     * @param string|array $mixed
-     * @param Use 'refresh' instead of 'location' $use_refresh
-     * @param Time to refresh $refresh_time
      * @return void
      */
-    public function redirect($mixed, $use_refresh = false, $refresh_time = 3)
+    public function run()
     {
-        $url = null;
-        if (is_string($mixed)) {
-            $url = trim($mixed);
-        } else if (is_array($mixed)) {
-            $controller = $this->Request->Route->getController();
-            $action = null;
-            if (isset($mixed['controller'])) {
-                $controller = trim($mixed['controller']);
+        $controller = $this->Request->Route->getController();
+        $action = $this->Request->Route->getAction();
+
+        if (defined('APPLICATION_NAMESPACE')) {
+            $controller = str_replace('\\', '', APPLICATION_NAMESPACE) . '\\' . $controller;
+        }
+        if (class_exists($controller)) {
+
+            // load reflection of controller/class
+            $this->Registry->reflectionLoad($controller);
+
+            // check if "__construct" method exists
+            // if Yes, then get dependencies/parameters info
+            $dependencies = array();
+            if (method_exists($controller, '__construct')) {
+                $dependencies = $this->Registry->reflectionGetMethodDependencies('__construct');
             }
-            $url = '/' . $controller;
-            if (isset($mixed['action'])) {
-                $action = trim($mixed['action']);
-            }
-            if (isset($action)) {
-                $url .= '/' . $action;
-            }
-            if (isset($mixed['query'])) {
-                $query = '?';
-                foreach ($mixed['query'] as $k => $v) {
-                    $query .= $k . '=' . urlencode($v) . '&';
+
+            // instantiate the user's controller using reflector
+            $obj = $this->Registry->reflectionCreateInstance($dependencies);
+
+            // check if object method exists
+            if (method_exists($obj, $action)) {
+
+                // check if action method needs dependency
+                $dependencies = $this->Registry->reflectionGetMethodDependencies($action);
+                // run/call the controller's action method
+                return call_user_func_array(array($obj, $action), $dependencies);
+
+            } else {
+                // no action method found!
+                $this->Response->Http->setHeader($this->Request->Http->getValue('SERVER_PROTOCOL') . ' 404 Not Found', true, 404);
+                if (DEVELOPMENT) {
+                    throw new RuntimeException('Cannot find method "' . $action . '" in controller class "' . $controller . '"');
+                } else {
+                    return $this->Response->View->renderErrorPage(404);
                 }
-                $query[strlen($query) - 1] = '';
-                $query = trim($query);
-                $url .= $query;
+
             }
-        }
-        if (!$use_refresh) {
-            $this->Response->Http->setHeader('Location: ' . $url);
         } else {
-            $this->Response->Http->setHeader('refresh:' . $refresh_time . ';url=' . $url);
+            // no controller class found!
+            $this->Response->Http->setHeader($this->Request->Http->getValue('SERVER_PROTOCOL') . ' 404 Not Found', true, 404);
+            if (DEVELOPMENT) {
+                throw new RuntimeException('Cannot find controller class "' . $controller . '"');
+            } else {
+                return $this->Response->View->renderErrorPage(404);
+            }            
         }
+        // flush the response
+        // $this->Response->View->send();
     }
+
 }

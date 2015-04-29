@@ -6,12 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Orinoco Framework, a lightweight PHP framework.">
     <meta name="author" content="Ryan Yonzon">
-    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="shortcut icon" href="/favicon.ico">
     <title>Orinoco Framework - A lightweight PHP framework</title>
 </head>
 <body>
     <div>
-        <?php $app->Response->View->getContent(); ?>
+        <?=$this->getContent()?>
     </div>
 </body>
 </html>

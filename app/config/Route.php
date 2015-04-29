@@ -11,17 +11,17 @@
  */
 
 // basic custom routes
-// $app->Request->Route->setRoute("/foo", array("controller" => "foo", "action" => "index"));
-// $app->Request->Route->setRoute("/foo/bar", array("controller" => "foo", "action" => "bar"));
+// $route->setRoute("/foo", array("controller" => "foo", "action" => "index"));
+// $route->setRoute("/foo/bar", array("controller" => "foo", "action" => "bar"));
 
 // regular expression e.g. http://mydomain.com/foo/bar
-// $app->Request->Route->setRoute('(^\/+[a-zA-Z]+\/+[a-zA-Z]([^/]+)/?$)', array('controller' => 'foo', 'action' => 'bar'));
+// $route->setRoute('(^\/+[a-zA-Z]+\/+[a-zA-Z]([^/]+)/?$)', array('controller' => 'foo', 'action' => 'bar'));
 
 // regular expression and specific controller class path e.g. /foo/test
-// $app->Request->Route->setRoute("(^\/+[a-zA-Z]+\/test+$)", array("controller" => "test", "action" => "index", "path" => "/path/to/test.php"));
+// $route->setRoute("(^\/+[a-zA-Z]+\/test+$)", array("controller" => "test", "action" => "index", "path" => "/path/to/test.php"));
 
 // override default index (home page) route
-// $app->Request->Route->setRoute("/", array("controller" => "index", "action" => "index", "path" => "/path/to/custom/home.php"));
+// $route->setRoute("/", array("controller" => "index", "action" => "index", "path" => "/path/to/custom/home.php"));
 
 /**
  * Advance samples
@@ -30,7 +30,7 @@
 /**
  * Use segment name and filters
  *
- *   $app->Request->Route->setRoute('/foo/:id', array(
+ *   $route->setRoute('/foo/:id', array(
  *           'controller' => 'foo',
  *           'action' => 'bar',
  *           'filters' => array(
@@ -38,7 +38,7 @@
  *               )
  *       ));
  *
- *   $app->Request->Route->setRoute('/foo/:type/:id', array(
+ *   $route->setRoute('/foo/:type/:id', array(
  *           'controller' => 'foo',
  *           'action' => 'type',
  *           'filters' => array(
