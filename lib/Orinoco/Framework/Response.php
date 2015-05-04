@@ -10,7 +10,9 @@ namespace Orinoco\Framework;
 
 class Response
 {
+    // Http object
     public $Http;
+    // View object
     public $View;
 
     /**

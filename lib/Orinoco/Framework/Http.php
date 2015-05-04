@@ -10,7 +10,7 @@ namespace Orinoco\Framework;
 
 class Http
 {
-    // $_SERVER storage
+    // $_SERVER information storage
     private $server;
 
     /**

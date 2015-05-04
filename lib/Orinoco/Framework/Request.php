@@ -10,7 +10,9 @@ namespace Orinoco\Framework;
 
 class Request
 {
+    // Http object
     public $Http;
+    // Route object
     public $Route;
 
     /**

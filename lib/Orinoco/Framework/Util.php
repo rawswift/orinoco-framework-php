@@ -27,6 +27,7 @@ class Util
     /**
      * var_dump wrapper
      *
+     * @param Object $obj
      * @return void
      */
     public static function dump($obj)

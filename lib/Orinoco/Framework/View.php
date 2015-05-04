@@ -29,7 +29,7 @@ class View
      * Constructor
      *
      * @param Http object $http
-     * @param View object $view
+     * @param Route object $route
      * @return void
      */
     public function __construct(Http $http, Route $route)
@@ -73,9 +73,7 @@ class View
     {
         // initialize default page view/template
         $page = array(
-                // 'controller' => DEFAULT_CONTROLLER,
                 'controller' => $this->route->getController(),
-                // 'action' => DEFAULT_ACTION
                 'action' => $this->route->getAction()
             );
         // check if passed parameter is an array
@@ -88,8 +86,7 @@ class View
             }
         // string
         } else if (is_string($page_view)) {
-            // $exploded = explode('/', $page_view); // use '/' as separator
-            $exploded = explode('#', $page_view); // use '#' as separator
+            $exploded = explode('#', $page_view); // use '#' as separator (we can also use '/')
             if (count($exploded) > 1) {
                 if (isset($exploded[0])) {
                     $page['controller'] = $exploded[0];
@@ -107,7 +104,7 @@ class View
     /**
      * Render view template/page (including layout)
      *     
-     * @param $page_view Explicit page view/template
+     * @param $page_view Explicit page view/template file
      * @param $obj_vars Variables to be passed to the layout and page template
      * @return void
      */
@@ -132,8 +129,6 @@ class View
                 } else {
                     $this->renderErrorPage(500);
                 }
-                $this->send();
-
             } else {
                 require $layout_file;
             }
@@ -148,7 +143,6 @@ class View
                 } else {
                     $this->renderErrorPage(500);
                 }
-                $this->send();
             }
         }
     }
@@ -156,7 +150,6 @@ class View
     /**
      * Render error page
      *
-     * @param Applicaton object $app
      * @param Error code (e.g. 404, 500, etc)
      * @return void
      */
@@ -171,13 +164,11 @@ class View
                 // error page not found? show this error message
                 $this->http->setHeader($this->http->getValue('SERVER_PROTOCOL') . ' 500 Internal Server Error', true, 500);
                 $this->setContent('500 - Internal Server Error (Unable to render ' . $error_code . ' error page)');
-                $this->send();
             }
         } else {
             // error page not found? show this error message
             $this->http->setHeader($this->http->getValue('SERVER_PROTOCOL') . ' 500 Internal Server Error', true, 500);
             $this->setContent('500 - Internal Server Error (Unable to render ' . $error_code . ' error page)');
-            $this->send();
         }
     }
 
@@ -208,6 +199,7 @@ class View
     /**
      * Get partial (presentation) content
      *
+     * @param String Partial name/path $partial_name
      * @return bool; whether or not partial file exists
      */
     public function getPartial($partial_name)

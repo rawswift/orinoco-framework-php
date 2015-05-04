@@ -86,8 +86,6 @@ class Application
                 return $this->Response->View->renderErrorPage(404);
             }            
         }
-        // flush the response
-        // $this->Response->View->send();
     }
 
 }

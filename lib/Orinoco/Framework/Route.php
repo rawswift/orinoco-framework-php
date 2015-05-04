@@ -32,7 +32,8 @@ class Route
     /**
      * Constructor, setup properties
      *
-     * @param request URI $request_uri
+     * @param Orinoco\Framework\Http $http
+     * @param Orinoco\Framework\Registry $registry
      * @return void
      */
     public function __construct(Http $http, Registry $registry)
