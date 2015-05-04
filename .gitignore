@@ -1,0 +1,6 @@
+# Ignore some files
+composer.lock
+composer.phar
+
+# Except this file
+!.gitignore
