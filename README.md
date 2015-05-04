@@ -2,62 +2,66 @@
 
 A lightweight PHP framework.
 
-## Quick Glance
+## Controller
 
-### Basic Controller
+### Basic
+
+Here is an example of a basic controller class:
 
     <?php
 
     class foo
     {
-            public function index()
+            public function __construct()
             {
-                    // executed on request URI /foo
+                    // This method will be executed upon (this) class instantiation
+                    // For example, you can use this method to initialize a private/public variable
             }
 
+            // action index
+            public function index()
+            {
+                    // Executed on request URI /foo
+            }
+
+            // action bar
             public function bar()
             {
-                    // executed on request URI /foo/bar
+                    // Executed on request URI /foo/bar
             }
     }
 
-### Advance Controller
+Though the above controller class will work just fine but in real world, you need to add logic to your controller and action methods. So here is an example of a simple `log` controller with basic logic:
+
 
     <?php
 
-    // use framework's classes
-    use Orinoco\Framework\Http as Http;
+    // Use framework's built-in View class
     use Orinoco\Framework\View as View;
 
-    // use Monolog vendor (installed via Composer)
+    // Use Monolog (vendor class, installed via Composer)
     use Monolog\Logger;
     use Monolog\Handler\StreamHandler;
 
     class log
     {
-            public function index(Http $http, View $view)
+            // View object instance will be injected automatically
+            // So you don't need to instantiate a new View object
+            public function index(View $view)
             {
-                    // create a log channel
+                    // Create a log channel
                     $log = new Logger('name');
                     $log->pushHandler(new StreamHandler('/tmp/monolog.txt', Logger::WARNING));
 
-                    // add records to the log
+                    // Add records to the log channel
                     $log->addWarning('Foo');
                     $log->addError('Bar');
 
-                    // assuming everything went OK
-                    $json = json_encode(array(
-                            'ok' => true,
-                            'message' => 'Log written successfully.'
+                    // Assuming everything went OK, output a JSON response
+                    return $view->renderJSON(array(
+                        'ok' => true,
+                        'message' => 'Log written successfully.'
                     ));
-                    $http->setHeader(array(
-                            'Content-Length' => strlen($json),
-                            'Content-type' => 'application/json;'
-                    ));
-                    // skip HTML views (templates)
-                    $view->disable();
-                    // ...and just render the JSON object
-                    $view->setContent($json);
             }
     }
 
