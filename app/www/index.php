@@ -104,7 +104,7 @@ if ($route->parseRequest()) {
 }
 
 // flush output buffer
-$view->send();
+$view->flush();
 
 // cleanup output buffer
 ob_end_clean();

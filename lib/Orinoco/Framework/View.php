@@ -237,7 +237,7 @@ class View
      *
      * @return void
      */
-    public function send()
+    public function flush()
     {
         ob_flush();
     }
