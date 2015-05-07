@@ -282,7 +282,7 @@ class View
         if (is_string($mixed)) {
             $url = trim($mixed);
         } else if (is_array($mixed)) {
-            $controller = $this->Request->Route->getController();
+            $controller = $this->route->getController();
             $action = null;
             if (isset($mixed['controller'])) {
                 $controller = trim($mixed['controller']);
