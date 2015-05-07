@@ -1,6 +1,5 @@
 <?php
 
-use Orinoco\Framework\Http as Http;
 use Orinoco\Framework\View as View;
 use Orinoco\Framework\Route as Route;
 
@@ -42,15 +41,6 @@ class foo
                 'action' => $route->getAction(),
                 'title' => $title,
                 'content' => $content
-            ));
-    }
-
-    // sample JSON response
-    public function json(View $view)
-    {
-        return $view->renderJSON(array(
-                'ok' => true,
-                'message' => 'Hello World!'
             ));
     }
 }
