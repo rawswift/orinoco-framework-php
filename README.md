@@ -67,7 +67,7 @@ Though the above controller class will work just fine but in real world, you nee
 
 ## Requirement
 
-Orinoco Framework v2.1 requires PHP 5.3.3 or later.
+Orinoco Framework requires PHP >= 5.4.0 version.
 
 ## Installation
 
