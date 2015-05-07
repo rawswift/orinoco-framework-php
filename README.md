@@ -1,4 +1,4 @@
-# Orinoco Framework v2.1
+# Orinoco Framework
 
 A lightweight PHP framework.
 
