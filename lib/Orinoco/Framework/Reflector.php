@@ -94,13 +94,20 @@ class Reflector
     }
 
     /**
-     * Create an instance w/ arguments/parameters
+     * Create an instance w/ or w/o arguments/parameters
      *
      * @param Array $arguments (parameters/dependencies)
+     * @param Boolean $with_constructor create instance w/ or w/o __construct being executed
      * @return Object instance
      */
-    public function reflectionCreateInstance($arguments = null)
+    public function reflectionCreateInstance($arguments = array(), $with_constructor = true)
     {
-        return $this->reflection->newInstanceArgs($arguments);
+        if ($with_constructor) {
+            // create new instance w/ __construct executed
+            return $this->reflection->newInstanceArgs($arguments);
+        } else {
+            // create new instance W/O __construct being executed
+            return $this->reflection->newInstanceWithoutConstructor($arguments);
+        }
     }
 }

@@ -51,19 +51,28 @@ class Application
 
             // check if "__construct" method exists
             // if Yes, then get dependencies/parameters info
+            $skip_reflection = false;
             $dependencies = array();
             if (method_exists($controller, '__construct')) {
                 $dependencies = $this->Registry->reflectionGetMethodDependencies('__construct');
+                // instantiate the user's controller using reflector w/ arguments
+                $obj = $this->Registry->reflectionCreateInstance($dependencies, true);
+            } else {
+                $dependencies = $this->Registry->reflectionGetMethodDependencies($action);
+                // instantiate the user's controller using reflector w/o arguments
+                $obj = $this->Registry->reflectionCreateInstance($dependencies, false);
+                $skip_reflection = true;
             }
-
-            // instantiate the user's controller using reflector
-            $obj = $this->Registry->reflectionCreateInstance($dependencies);
 
             // check if object method exists
             if (method_exists($obj, $action)) {
 
-                // check if action method needs dependency
-                $dependencies = $this->Registry->reflectionGetMethodDependencies($action);
+                // if we already got the action's dependencies then skip reflection get method dependencies
+                if (!$skip_reflection) {
+                    // check if action method needs dependency
+                    $dependencies = $this->Registry->reflectionGetMethodDependencies($action);
+                }
+
                 // run/call the controller's action method
                 return call_user_func_array(array($obj, $action), $dependencies);
 
