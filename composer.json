@@ -3,6 +3,6 @@
         "php": ">=5.4.0"
     },
     "config": {
-        "vendor-dir": "app/vendor"
+        "vendor-dir": "vendor"
     }
 }
