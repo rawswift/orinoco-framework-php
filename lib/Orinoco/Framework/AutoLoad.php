@@ -42,6 +42,12 @@ class AutoLoad
         spl_autoload_register(array('Orinoco\Framework\AutoLoad', 'autoLoadFramework')); // register class Orinoco\Framework\AutoLoad::autoLoadFramework
     }
 
+    /**
+     * Register an anonymous (autoload) function
+     *
+     * @param Directory/folder name $dir_name
+     * @return void
+     */
     public static function register($dir_name)
     {
         // Prepare directory/folder name
