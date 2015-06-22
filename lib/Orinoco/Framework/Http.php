@@ -25,6 +25,15 @@ class Http
     }
 
     /**
+     * Return the $_SERVER['REQUEST_METHOD']
+     *
+     * @return string; request method
+     */
+    public function getRequestMethod() {
+        return $this->server['REQUEST_METHOD'];
+    }
+
+    /**
      * Return the $_SERVER['REQUEST_URI']
      *
      * @return string; request URI

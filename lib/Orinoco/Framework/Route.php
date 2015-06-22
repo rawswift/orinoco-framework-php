@@ -12,6 +12,8 @@ class Route
 {
     // route table (map)
     public $route_table;
+    // request method (e.g. GET, POST, etc)
+    public $request_method;
     // contains the raw URI request e.g. /foo/bar?id=123
     public $request_uri;
     // contains the parsed URL components
@@ -38,6 +40,7 @@ class Route
      */
     public function __construct(Http $http, Registry $registry)
     {
+        $this->request_method = $http->getRequestMethod();
         $this->request_uri = $http->getRequestURI();
         $this->registry = $registry;
     }
@@ -74,8 +77,19 @@ class Route
         $this->components = parse_url($this->request_uri);
         $this->request_map = preg_split("/\//", $this->components['path'], 0, PREG_SPLIT_NO_EMPTY);
         if ($match = $this->matchRouteRule($this->components['path'])) {
-            $this->controller = ($match["controller"] === SELF_CONTROLLER) ? $this->request_map[0] : $match["controller"];
-            $this->action = ($match["action"] === SELF_ACTION) ? $this->request_map[1] : $match["action"];
+
+            if (isset($match["controller"])) {
+                $this->controller = ($match["controller"] === SELF_CONTROLLER) ? $this->request_map[0] : $match["controller"];
+            } else {
+                $this->controller = $this->request_map[0];
+            }
+
+            if (isset($match["action"])) {
+                $this->action = ($match["action"] === SELF_ACTION) ? $this->request_map[1] : $match["action"];
+            } else {
+                $this->action = $this->request_map[1];
+            }
+
             if (isset($match["path"])) {
                 $this->path = $match["path"];
             }
@@ -127,6 +141,26 @@ class Route
     private function matchRouteRule($subject)
     {
         foreach($this->route_table as $k => $v) {
+            // Check if 'method' is defined in route rule
+            if (isset($v['method'])) {
+                $check_method_value = preg_grep('/^' . $this->request_method . '$/i', $v['method']);
+                $check_method_key = array_intersect_key($v['method'], array_flip(preg_grep('/^' . $this->request_method . '$/i', array_keys($v['method']), 0)));
+                if (empty($check_method_value) && empty($check_method_key)) {
+                    continue;
+                } else {
+                    if (isset($check_method_key)) {
+                        // Create a secondary mapping with uppercased key name
+                        $check_method_key_uppercased = array();
+                        foreach ($check_method_key as $key => $val) {
+                            $check_method_key_uppercased[strtoupper($key)] = $val;
+                        }
+                        // Check if we need to override 'action' (response)
+                        if (array_key_exists($this->request_method, $check_method_key_uppercased)) {
+                            $v['action'] = $check_method_key_uppercased[$this->request_method];
+                        }
+                    }
+                }
+            }
             $filters = array();
             if (isset($v['filters'])) {
                 $filters = $v['filters'];

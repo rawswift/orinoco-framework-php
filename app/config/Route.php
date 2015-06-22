@@ -28,7 +28,7 @@
  */
 
 /**
- * Use segment name and filters
+ * Use segment name and parameter filter
  *
  *   $route->setRoute('/foo/:id', array(
  *           'controller' => 'foo',
@@ -46,4 +46,19 @@
  *                   'id' => '(\d+)' // "id" as digits only
  *               )
  *       )); 
-*/
+ */
+
+/**
+ * Specific action for specific method (in this example, GET and POST methods are the only methods allowed)
+ *
+ *   $route->setRoute('/foo/:hashid', array(
+ *           'controller' => 'foo',
+ *           'method' => array(
+ *                   'get' => 'index',
+ *                   'post' => 'store'
+ *               ),
+ *           'filters' => array(
+ *                   'hashid' => '(\w+)' // "hashid" as letters and digits only
+ *               )
+ *       ));
+ */
