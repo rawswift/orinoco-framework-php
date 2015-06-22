@@ -41,9 +41,6 @@ class Application
         $controller = $this->Request->Route->getController();
         $action = $this->Request->Route->getAction();
 
-        if (defined('APPLICATION_NAMESPACE')) {
-            $controller = str_replace('\\', '', APPLICATION_NAMESPACE) . '\\' . $controller;
-        }
         if (class_exists($controller)) {
 
             // load reflection of controller/class
