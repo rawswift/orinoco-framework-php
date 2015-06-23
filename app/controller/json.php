@@ -9,7 +9,7 @@ class json
     {
         return $view->renderJSON(array(
                 'ok' => true,
-                'message' => 'Hello World!'
+                'message' => 'Hooray! It works!'
             ));
     }
 }
