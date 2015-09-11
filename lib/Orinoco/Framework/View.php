@@ -309,6 +309,9 @@ class View
         } else {
             $this->http->setHeader('refresh:' . $refresh_time . ';url=' . $url);
         }
+
+        // exit normally
+        exit(0);
     }
 
 }
