@@ -38,6 +38,17 @@ class Reflector
     }
 
     /**
+     * Get constructor name
+     *
+     * @param void
+     * @return String constructor name
+     */
+    public function reflectionGetConstructor()
+    {
+        return $this->reflection->getConstructor();
+    }
+
+    /**
      * Get method's number of parameter(s)
      *
      * @param String $method_name
