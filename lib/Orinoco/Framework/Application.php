@@ -39,6 +39,7 @@ class Application
     public function run()
     {
         $controller = $this->Request->Route->getController();
+        $controller = $controller . CONTROLLER_NAME_SUFFIX;
         $action = $this->Request->Route->getAction();
 
         if (class_exists($controller)) {
@@ -46,20 +47,25 @@ class Application
             // load reflection of controller/class
             $this->Registry->reflectionLoad($controller);
 
-            // check if "__construct" method exists
-            // if Yes, then get dependencies/parameters info
-            $skip_reflection = false;
+            $skip_reflection = true;
+            $with_constructor = false;
             $dependencies = array();
-            if (method_exists($controller, '__construct')) {
-                $dependencies = $this->Registry->reflectionGetMethodDependencies('__construct');
-                // instantiate the user's controller using reflector w/ arguments
-                $obj = $this->Registry->reflectionCreateInstance($dependencies, true);
+
+            $constructor = $this->Registry->reflectionGetConstructor();
+
+            // check if class has a contructor method (either "__construct" or method that is the same name as its class)
+            if (isset($constructor->name)) {
+                $dependencies = $this->Registry->reflectionGetMethodDependencies($constructor->name);
+                if ($constructor->name == '__construct') {
+                    $skip_reflection = false;
+                    $with_constructor = true;
+                }
             } else {
                 $dependencies = $this->Registry->reflectionGetMethodDependencies($action);
-                // instantiate the user's controller using reflector w/o arguments
-                $obj = $this->Registry->reflectionCreateInstance($dependencies, false);
-                $skip_reflection = true;
             }
+
+            // create class instance
+            $obj = $this->Registry->reflectionCreateInstance($dependencies, $with_constructor);
 
             // check if object method exists
             if (method_exists($obj, $action)) {

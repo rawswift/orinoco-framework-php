@@ -3,7 +3,7 @@
 use Orinoco\Framework\View as View;
 use Orinoco\Framework\Route as Route;
 
-class foo
+class fooController
 {
     public function __construct()
     {

@@ -2,7 +2,7 @@
 
 use Orinoco\Framework\View as View;
 
-class json
+class jsonController
 {
     // sample JSON response
     public function index(View $view)

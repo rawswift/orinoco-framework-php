@@ -2,7 +2,7 @@
 
 use Orinoco\Framework\View as View;
 
-class index
+class indexController
 {
     public function index(View $view)
     {

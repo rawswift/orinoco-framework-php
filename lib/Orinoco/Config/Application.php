@@ -41,15 +41,20 @@ if (!defined('DEFAULT_ACTION')) {
     define('DEFAULT_ACTION', 'index');
 }
 
+// define default controller name suffix
+if (!defined('CONTROLLER_NAME_SUFFIX')) {
+    define('CONTROLLER_NAME_SUFFIX', 'Controller');
+}
+
 // presentation layer stuff
 if (!defined('DEFAULT_LAYOUT')) {
     define('DEFAULT_LAYOUT', 'application');
 }
 
 if (!defined('ERROR_404_PAGE')) {
-	define('ERROR_404_PAGE', '404'); // app/view/error/404.php
+    define('ERROR_404_PAGE', '404'); // app/view/error/404.php
 }
 
 if (!defined('ERROR_500_PAGE')) {
-	define('ERROR_500_PAGE', '500'); // app/view/error/500.php
+    define('ERROR_500_PAGE', '500'); // app/view/error/500.php
 }
