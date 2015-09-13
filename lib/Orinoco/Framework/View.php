@@ -9,8 +9,6 @@
 namespace Orinoco\Framework;
 
 use RuntimeException;
-use Orinoco\Framework\Http as Http;
-use Orinoco\Framework\Request as Request;
 
 class View
 {

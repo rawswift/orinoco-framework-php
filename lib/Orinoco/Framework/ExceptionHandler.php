@@ -9,8 +9,6 @@
 namespace Orinoco\Framework;
 
 use ErrorException;
-use Orinoco\Framework\Http as Http;
-use Orinoco\Framework\View as View;
 
 class ExceptionHandler
 {
