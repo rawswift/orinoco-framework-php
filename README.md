@@ -10,7 +10,7 @@ Here is an example of a basic controller class:
 
     <?php
 
-    class foo
+    class fooController
     {
             public function __construct()
             {
@@ -43,7 +43,7 @@ Though the above controller class will work just fine but in real world, you nee
     use Monolog\Logger;
     use Monolog\Handler\StreamHandler;
 
-    class log
+    class logController
     {
             // View object instance will be injected automatically
             // So you don't need to instantiate a new View object
